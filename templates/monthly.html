@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div><span class="eyebrow"><i class="bi bi-calendar3"></i> Monthly report</span><h1>รายงานสรุปรายเดือน</h1><p>รวมยอดตามวันและอาคาร เพื่อเปรียบเทียบข้อมูลได้ง่ายขึ้น</p></div>
+    <button class="btn btn-primary app-primary" id="refreshButton"><i class="bi bi-arrow-clockwise"></i> อัปเดตข้อมูล</button>
+</header>
+
+<section class="filter-card">
+    <div class="filter-title"><i class="bi bi-sliders"></i><span><strong>ตัวกรองรายเดือน</strong><small>เลือกเดือนและอาคารที่ต้องการสรุป</small></span></div>
+    <div class="filter-controls">
+        <label>เดือน<input type="month" class="form-control" id="reportMonth"></label>
+        <label>อาคาร<select class="form-select" id="branchFilter"><option value="">ทุกอาคาร</option></select></label>
+    </div>
+</section>
+
+<section class="kpi-grid kpi-grid-compact">
+    <article class="kpi-card kpi-general"><div class="kpi-icon"><i class="bi bi-trash3"></i></div><div><span>ขยะทั่วไป</span><strong id="generalKpi">—</strong><small>กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-recycle"><div class="kpi-icon"><i class="bi bi-recycle"></i></div><div><span>ขยะรีไซเคิล</span><strong id="recycleKpi">—</strong><small>กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-total"><div class="kpi-icon"><i class="bi bi-box-seam"></i></div><div><span>รวมทั้งเดือน</span><strong id="totalKpi">—</strong><small>กิโลกรัม · <span id="recordCount">0</span> รายการ</small></div></article>
+</section>
+
+<section class="panel-card">
+    <div class="panel-heading"><div><h2>สรุปยอดรายวัน</h2><p id="monthlyCaption">กำลังโหลดข้อมูล…</p></div><span class="count-pill" id="monthlyCount">0 แถว</span></div>
+    <div class="table-responsive">
+        <table class="table report-table align-middle">
+            <thead><tr><th>#</th><th>วันที่</th><th>อาคาร</th><th class="text-end">ขยะทั่วไป</th><th class="text-end">ขยะรีไซเคิล</th><th class="text-end">รวม</th><th class="text-end">จำนวนบันทึก</th></tr></thead>
+            <tbody id="monthlyRows"></tbody>
+        </table>
+    </div>
+</section>
+<div class="alert alert-danger d-none" id="pageError" role="alert"></div>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', path='css/js/monthly.js') }}"></script>{% endblock %}
