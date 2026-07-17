@@ -1,5 +1,13 @@
 window.WasteApp = (() => {
     const FORM_URL = "https://docs.google.com/forms/d/1uLLBqKbqgTLa7tsu_OYfnpQipEO8ZrsSK-HxEDyLb9Q/viewform";
+    const CATEGORIES = [
+        { key: "general", label: "ทั่วไป", className: "general" },
+        { key: "recycle", label: "รีไซเคิล", className: "recycle" },
+        { key: "infectious", label: "ติดเชื้อ", className: "infectious" },
+        { key: "document", label: "เอกสารทำลาย", className: "document" },
+        { key: "toxic", label: "พิษ", className: "toxic" },
+        { key: "other", label: "อื่น ๆ", className: "other" },
+    ];
     const number = new Intl.NumberFormat("th-TH", { maximumFractionDigits: 2 });
 
     function escapeHtml(value) {
@@ -34,12 +42,31 @@ window.WasteApp = (() => {
     function populateBranches(select, data) {
         const selected = select.value;
         const branches = [...new Set(data.map(row => row.branch).filter(Boolean))].sort();
-        select.innerHTML = '<option value="">ทุกอาคาร</option>' + branches.map(branch => `<option value="${escapeHtml(branch)}">${escapeHtml(branch)}</option>`).join("");
+        select.innerHTML = '<option value="">ทุกหน่วยงาน</option>' + branches.map(branch => `<option value="${escapeHtml(branch)}">${escapeHtml(branch)}</option>`).join("");
         if (branches.includes(selected)) select.value = selected;
     }
 
     function totals(data) {
-        return data.reduce((sum, row) => ({ general: sum.general + row.general, recycle: sum.recycle + row.recycle, total: sum.total + row.total }), { general: 0, recycle: 0, total: 0 });
+        const initial = Object.fromEntries(CATEGORIES.map(category => [category.key, 0]));
+        initial.total = 0;
+        return data.reduce((sum, row) => {
+            CATEGORIES.forEach(category => { sum[category.key] += Number(row[category.key]) || 0; });
+            sum.total += Number(row.total) || 0;
+            return sum;
+        }, initial);
+    }
+
+    function updateKpis(sum, recordCount) {
+        CATEGORIES.forEach(category => {
+            const target = document.getElementById(`${category.key}Kpi`);
+            if (target) target.textContent = formatNumber(sum[category.key]);
+        });
+        const total = document.getElementById("totalKpi");
+        if (total) total.textContent = formatNumber(sum.total);
+        const records = document.getElementById("recordKpi");
+        if (records) records.textContent = formatNumber(recordCount);
+        const recordCountTarget = document.getElementById("recordCount");
+        if (recordCountTarget) recordCountTarget.textContent = formatNumber(recordCount);
     }
 
     function emptyRow(columns, text = "ไม่พบข้อมูลตามตัวกรองที่เลือก") {
@@ -60,8 +87,7 @@ window.WasteApp = (() => {
     }
 
     document.querySelectorAll("[data-form-link]").forEach(link => link.href = FORM_URL);
-    const page = document.body.dataset.page;
-    document.querySelector(`[data-nav="${page}"]`)?.classList.add("active");
+    document.querySelector(`[data-nav="${document.body.dataset.page}"]`)?.classList.add("active");
 
-    return { escapeHtml, localDateInput, localMonthInput, formatNumber, formatDate, formatTime, loadData, populateBranches, totals, emptyRow, showError, setBusy };
+    return { CATEGORIES, escapeHtml, localDateInput, localMonthInput, formatNumber, formatDate, formatTime, loadData, populateBranches, totals, updateKpis, emptyRow, showError, setBusy };
 })();

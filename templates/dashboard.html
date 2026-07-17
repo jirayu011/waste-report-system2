@@ -4,39 +4,39 @@
 <section class="hero-panel">
     <div>
         <span class="eyebrow"><i class="bi bi-buildings"></i> Gourmet House Culinary Care</span>
-        <h1>ภาพรวมปริมาณขยะ B1/B2</h1>
-        <p>ติดตามขยะทั่วไปและขยะรีไซเคิลจากแบบฟอร์มประจำวันในมุมมองเดียว</p>
+        <h1>ภาพรวมการจัดการขยะ GHCC</h1>
+        <p>ติดตามปริมาณขยะทั้ง 6 หมวดจากแบบฟอร์มรายงานประจำวันในมุมมองเดียว</p>
     </div>
-    <div class="hero-actions">
-        <button class="btn btn-light" id="refreshButton"><i class="bi bi-arrow-clockwise"></i> อัปเดตข้อมูล</button>
-    </div>
+    <div class="hero-actions"><button class="btn btn-light" id="refreshButton"><i class="bi bi-arrow-clockwise"></i> อัปเดตข้อมูล</button></div>
 </section>
 
 <section class="filter-card">
-    <div class="filter-title"><i class="bi bi-funnel"></i><span><strong>ตัวกรองภาพรวม</strong><small>เลือกเดือนและอาคารที่ต้องการดู</small></span></div>
+    <div class="filter-title"><i class="bi bi-funnel"></i><span><strong>ตัวกรองภาพรวม</strong><small>เลือกเดือนและหน่วยงานที่ต้องการดู</small></span></div>
     <div class="filter-controls">
         <label>เดือน<input type="month" class="form-control" id="dashboardMonth"></label>
-        <label>อาคาร<select class="form-select" id="dashboardBranch"><option value="">ทุกอาคาร</option></select></label>
+        <label>หน่วยงาน<select class="form-select" id="dashboardBranch"><option value="">ทุกหน่วยงาน</option></select></label>
     </div>
 </section>
 
-<section class="kpi-grid" aria-label="สรุปข้อมูล">
-    <article class="kpi-card kpi-general"><div class="kpi-icon"><i class="bi bi-trash3"></i></div><div><span>ขยะทั่วไป</span><strong id="generalKpi">—</strong><small>กิโลกรัม</small></div></article>
-    <article class="kpi-card kpi-recycle"><div class="kpi-icon"><i class="bi bi-recycle"></i></div><div><span>ขยะรีไซเคิล</span><strong id="recycleKpi">—</strong><small>กิโลกรัม</small></div></article>
-    <article class="kpi-card kpi-total"><div class="kpi-icon"><i class="bi bi-box-seam"></i></div><div><span>รวมทั้งหมด</span><strong id="totalKpi">—</strong><small>กิโลกรัม</small></div></article>
+<section class="kpi-grid kpi-grid-categories" aria-label="สรุปปริมาณขยะ">
+    <article class="kpi-card kpi-general"><div class="kpi-icon"><i class="bi bi-trash3"></i></div><div><span>ขยะทั่วไป</span><strong id="generalKpi">—</strong><small>ถุงสีดำ · กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-recycle"><div class="kpi-icon"><i class="bi bi-recycle"></i></div><div><span>ขยะรีไซเคิล</span><strong id="recycleKpi">—</strong><small>ถุงสีเหลือง · กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-infectious"><div class="kpi-icon"><i class="bi bi-shield-plus"></i></div><div><span>ขยะติดเชื้อ</span><strong id="infectiousKpi">—</strong><small>ถุงสีแดง · กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-document"><div class="kpi-icon"><i class="bi bi-file-earmark-lock"></i></div><div><span>เอกสารทำลาย</span><strong id="documentKpi">—</strong><small>ถุงสีขาว · กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-toxic"><div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div><div><span>ขยะพิษ</span><strong id="toxicKpi">—</strong><small>ถุงสีเทา · กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-other"><div class="kpi-icon"><i class="bi bi-three-dots"></i></div><div><span>ขยะอื่น ๆ</span><strong id="otherKpi">—</strong><small>กิโลกรัม</small></div></article>
+    <article class="kpi-card kpi-total"><div class="kpi-icon"><i class="bi bi-box-seam"></i></div><div><span>รวมทุกประเภท</span><strong id="totalKpi">—</strong><small>กิโลกรัม</small></div></article>
     <article class="kpi-card kpi-record"><div class="kpi-icon"><i class="bi bi-clipboard-data"></i></div><div><span>จำนวนรายการ</span><strong id="recordKpi">—</strong><small>รายการ</small></div></article>
 </section>
 
 <section class="content-grid">
     <article class="panel-card">
-        <div class="panel-heading"><div><h2>เปรียบเทียบรายอาคาร</h2><p>สัดส่วนปริมาณขยะของ B1 และ B2</p></div><span class="status-dot">ข้อมูลล่าสุด</span></div>
+        <div class="panel-heading"><div><h2>เปรียบเทียบรายหน่วยงาน</h2><p>สัดส่วนขยะทั้ง 6 หมวดในช่วงเวลาที่เลือก</p></div><span class="status-dot">ข้อมูลล่าสุด</span></div>
         <div id="branchSummary" class="branch-summary"></div>
     </article>
     <article class="panel-card">
         <div class="panel-heading"><div><h2>รายการล่าสุด</h2><p>ข้อมูลที่ส่งเข้ามาล่าสุด</p></div><a href="/daily">ดูรายวัน <i class="bi bi-arrow-right"></i></a></div>
-        <div class="table-responsive">
-            <table class="table report-table"><thead><tr><th>วันที่</th><th>อาคาร</th><th class="text-end">รวม</th><th>ผู้บันทึก</th></tr></thead><tbody id="recentRows"></tbody></table>
-        </div>
+        <div class="table-responsive"><table class="table report-table"><thead><tr><th>วันที่</th><th>หน่วยงาน</th><th class="text-end">รวม</th><th>ผู้บันทึก</th></tr></thead><tbody id="recentRows"></tbody></table></div>
     </article>
 </section>
 <div class="alert alert-danger d-none" id="pageError" role="alert"></div>

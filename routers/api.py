@@ -5,6 +5,7 @@ from services.sheets import FORM_URL, get_all_data
 
 
 router = APIRouter(prefix="/api", tags=["API"])
+CATEGORY_KEYS = ("general", "recycle", "infectious", "document", "toxic", "other")
 
 
 @router.get("/data")
@@ -23,19 +24,17 @@ def api_data(
         if branch:
             data = [row for row in data if row["branch"].casefold() == branch.casefold()]
 
-        summary = {
-            "general": sum(row["general"] for row in data),
-            "recycle": sum(row["recycle"] for row in data),
-            "total": sum(row["total"] for row in data),
-            "records": len(data),
-        }
-        branches = sorted({row["branch"] for row in data if row["branch"]})
+        summary = {key: sum(row[key] for row in data) for key in CATEGORY_KEYS}
+        summary.update(
+            total=sum(row["total"] for row in data),
+            records=len(data),
+        )
 
         return {
             "success": True,
             "count": len(data),
             "summary": summary,
-            "branches": branches,
+            "branches": sorted({row["branch"] for row in data if row["branch"]}),
             "form_url": FORM_URL,
             "data": data,
         }
