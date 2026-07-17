@@ -14,16 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function render() {
         const data = filteredRows();
         const sum = App.totals(data);
-        document.getElementById("generalKpi").textContent = App.formatNumber(sum.general);
-        document.getElementById("recycleKpi").textContent = App.formatNumber(sum.recycle);
-        document.getElementById("totalKpi").textContent = App.formatNumber(sum.total);
-        document.getElementById("recordKpi").textContent = App.formatNumber(data.length);
+        App.updateKpis(sum, data.length);
 
         const grouped = data.reduce((result, row) => {
-            const key = row.branch || "ไม่ระบุ";
-            result[key] ||= { general: 0, recycle: 0, total: 0 };
-            result[key].general += row.general;
-            result[key].recycle += row.recycle;
+            const key = row.branch || "ไม่ระบุหน่วยงาน";
+            result[key] ||= { ...Object.fromEntries(App.CATEGORIES.map(category => [category.key, 0])), total: 0 };
+            App.CATEGORIES.forEach(category => { result[key][category.key] += row[category.key]; });
             result[key].total += row.total;
             return result;
         }, {});
@@ -32,9 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="branch-row">
                 <div class="branch-label"><span class="branch-badge">${App.escapeHtml(branch)}</span><strong>${App.formatNumber(item.total)} kg</strong></div>
                 <div class="stacked-bar" aria-label="${App.escapeHtml(branch)} รวม ${item.total} กิโลกรัม" style="--width:${(item.total / max) * 100}%">
-                    <span class="bar-general" style="--part:${item.total ? item.general / item.total * 100 : 0}%"></span><span class="bar-recycle"></span>
+                    ${App.CATEGORIES.map(category => `<span class="bar-${category.className}" style="--part:${item.total ? item[category.key] / item.total * 100 : 0}%"></span>`).join("")}
                 </div>
-                <div class="bar-legend"><span><i class="legend-general"></i>ทั่วไป ${App.formatNumber(item.general)}</span><span><i class="legend-recycle"></i>รีไซเคิล ${App.formatNumber(item.recycle)}</span></div>
+                <div class="bar-legend">${App.CATEGORIES.map(category => `<span><i class="legend-${category.className}"></i>${category.label} ${App.formatNumber(item[category.key])}</span>`).join("")}</div>
             </div>`).join("") : '<div class="empty-block"><i class="bi bi-bar-chart"></i><span>ยังไม่มีข้อมูลในเดือนนี้</span></div>';
 
         const recent = [...data].sort((a, b) => (b.timestamp_iso || b.date_iso).localeCompare(a.timestamp_iso || a.date_iso)).slice(0, 6);
@@ -43,11 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function load() {
         App.setBusy(refreshButton, true);
-        try {
-            rows = await App.loadData();
-            App.populateBranches(branchInput, rows);
-            render();
-        } catch (error) { App.showError(error); }
+        try { rows = await App.loadData(); App.populateBranches(branchInput, rows); render(); }
+        catch (error) { App.showError(error); }
         finally { App.setBusy(refreshButton, false); }
     }
 

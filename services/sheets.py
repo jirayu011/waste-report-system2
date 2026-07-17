@@ -4,11 +4,11 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
 
 import gspread
 import requests
 from google.oauth2.service_account import Credentials
-from urllib.parse import quote
 
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
@@ -40,8 +40,6 @@ def get_sheet():
     try:
         return spreadsheet.worksheet(SHEET_NAME)
     except gspread.WorksheetNotFound:
-        # Google Forms may keep the Thai default tab name while the table itself
-        # is named Form_Responses. Falling back keeps the report usable if renamed.
         for candidate in ("Form_Responses", "การตอบแบบฟอร์ม 1"):
             try:
                 return spreadsheet.worksheet(candidate)
@@ -63,8 +61,6 @@ def _public_records():
 
 
 def _get_records():
-    # A public Google Sheet does not require a service-account key. Use the key
-    # when supplied, otherwise read the CSV view exposed by the shared sheet.
     if CREDENTIALS_FILE.is_file() and CREDENTIALS_FILE.stat().st_size > 2:
         try:
             return get_sheet().get_all_records(default_blank="")
@@ -115,6 +111,13 @@ def _pick(row, *names):
     return ""
 
 
+def _pick_containing(row, keyword):
+    for key, value in row.items():
+        if keyword in _clean_header(key):
+            return value
+    return ""
+
+
 def normalize_row(row, index):
     timestamp = _pick(row, "ประทับเวลา", "Timestamp")
     report_date = _pick(row, "วันที่", "Date")
@@ -123,8 +126,15 @@ def normalize_row(row, index):
         "Gourmet House Culinary Care – (GHCC)",
         "Gourmet House Culinary Care - (GHCC)",
     )
-    general = _number(_pick(row, "ขยะทั่วไป"))
-    recycle = _number(_pick(row, "ขยะรีไซเคิล"))
+
+    general = _number(_pick_containing(row, "ขยะทั่วไป"))
+    recycle = _number(_pick_containing(row, "ขยะรีไซเคิล"))
+    infectious = _number(_pick_containing(row, "ขยะติดเชื้อ"))
+    document = _number(_pick_containing(row, "ขยะเอกสารทำลาย"))
+    toxic = _number(_pick_containing(row, "ขยะพิษ"))
+    other_detail = str(_pick(row, "อื่นๆ", "อื่น ๆ") or "").strip()
+    other = _number(other_detail)
+    total = general + recycle + infectious + document + toxic + other
 
     return {
         "id": index,
@@ -135,8 +145,13 @@ def normalize_row(row, index):
         "branch": str(branch or "").strip(),
         "general": general,
         "recycle": recycle,
-        "total": general + recycle,
-        "recorder": str(_pick(row, "ผู้บันทึกขยะ", "ผู้บันทึกขยะ ") or "").strip(),
+        "infectious": infectious,
+        "document": document,
+        "toxic": toxic,
+        "other": other,
+        "other_detail": other_detail,
+        "total": total,
+        "recorder": str(_pick(row, "ผู้บันทึกขยะ") or "").strip(),
     }
 
 

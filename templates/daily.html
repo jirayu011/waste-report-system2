@@ -2,7 +2,7 @@
 
 {% block content %}
 <header class="page-header">
-    <div><span class="eyebrow"><i class="bi bi-calendar-day"></i> Daily report</span><h1>รายงานปริมาณขยะรายวัน</h1><p>เลือกวันที่และอาคารเพื่อดูรายการบันทึกอย่างละเอียด</p></div>
+    <div><span class="eyebrow"><i class="bi bi-calendar-day"></i> Daily report</span><h1>รายงานปริมาณขยะรายวัน</h1><p>ตรวจสอบรายละเอียดขยะแต่ละประเภทตามวันที่และหน่วยงาน</p></div>
     <button class="btn btn-primary app-primary" id="refreshButton"><i class="bi bi-arrow-clockwise"></i> อัปเดตข้อมูล</button>
 </header>
 
@@ -10,21 +10,25 @@
     <div class="filter-title"><i class="bi bi-search"></i><span><strong>ค้นหารายการ</strong><small>ข้อมูลจะเปลี่ยนทันทีเมื่อเลือกตัวกรอง</small></span></div>
     <div class="filter-controls">
         <label>วันที่<input type="date" class="form-control" id="reportDate"></label>
-        <label>อาคาร<select class="form-select" id="branchFilter"><option value="">ทุกอาคาร</option></select></label>
+        <label>หน่วยงาน<select class="form-select" id="branchFilter"><option value="">ทุกหน่วยงาน</option></select></label>
     </div>
 </section>
 
-<section class="kpi-grid kpi-grid-compact">
-    <article class="kpi-card kpi-general"><div class="kpi-icon"><i class="bi bi-trash3"></i></div><div><span>ขยะทั่วไป</span><strong id="generalKpi">—</strong><small>กิโลกรัม</small></div></article>
-    <article class="kpi-card kpi-recycle"><div class="kpi-icon"><i class="bi bi-recycle"></i></div><div><span>ขยะรีไซเคิล</span><strong id="recycleKpi">—</strong><small>กิโลกรัม</small></div></article>
-    <article class="kpi-card kpi-total"><div class="kpi-icon"><i class="bi bi-box-seam"></i></div><div><span>รวมทั้งหมด</span><strong id="totalKpi">—</strong><small>กิโลกรัม · <span id="recordCount">0</span> รายการ</small></div></article>
+<section class="kpi-grid kpi-grid-categories compact-categories">
+    <article class="kpi-card kpi-general"><div><span>ทั่วไป</span><strong id="generalKpi">—</strong><small>ถุงดำ · kg</small></div></article>
+    <article class="kpi-card kpi-recycle"><div><span>รีไซเคิล</span><strong id="recycleKpi">—</strong><small>ถุงเหลือง · kg</small></div></article>
+    <article class="kpi-card kpi-infectious"><div><span>ติดเชื้อ</span><strong id="infectiousKpi">—</strong><small>ถุงแดง · kg</small></div></article>
+    <article class="kpi-card kpi-document"><div><span>เอกสารทำลาย</span><strong id="documentKpi">—</strong><small>ถุงขาว · kg</small></div></article>
+    <article class="kpi-card kpi-toxic"><div><span>ขยะพิษ</span><strong id="toxicKpi">—</strong><small>ถุงเทา · kg</small></div></article>
+    <article class="kpi-card kpi-other"><div><span>อื่น ๆ</span><strong id="otherKpi">—</strong><small>kg</small></div></article>
+    <article class="kpi-card kpi-total"><div><span>รวมทั้งหมด</span><strong id="totalKpi">—</strong><small>kg · <span id="recordCount">0</span> รายการ</small></div></article>
 </section>
 
 <section class="panel-card">
     <div class="panel-heading"><div><h2>รายการบันทึก</h2><p id="dailyCaption">กำลังโหลดข้อมูล…</p></div><span class="count-pill" id="dailyCount">0 รายการ</span></div>
     <div class="table-responsive">
-        <table class="table report-table align-middle">
-            <thead><tr><th>#</th><th>เวลา</th><th>อาคาร</th><th class="text-end">ขยะทั่วไป</th><th class="text-end">ขยะรีไซเคิล</th><th class="text-end">รวม</th><th>ผู้บันทึก</th></tr></thead>
+        <table class="table report-table align-middle wide-report">
+            <thead><tr><th>#</th><th>เวลา</th><th>หน่วยงาน</th><th class="text-end general-head">ทั่วไป</th><th class="text-end recycle-head">รีไซเคิล</th><th class="text-end infectious-head">ติดเชื้อ</th><th class="text-end document-head">เอกสารทำลาย</th><th class="text-end toxic-head">พิษ</th><th>อื่น ๆ</th><th class="text-end">รวม</th><th>ผู้บันทึก</th></tr></thead>
             <tbody id="reportRows"></tbody>
         </table>
     </div>

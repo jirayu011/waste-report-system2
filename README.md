@@ -1,6 +1,6 @@
-# GHCC Waste Report B1/B2
+# GHCC Waste Management
 
-ระบบสรุปรายงานปริมาณขยะประจำวันสำหรับ Gourmet House Culinary Care อาคาร B1/B2
+ระบบสรุปรายงานปริมาณขยะประจำวัน 6 หมวดสำหรับ Gourmet House Culinary Care
 
 ## Run locally
 
